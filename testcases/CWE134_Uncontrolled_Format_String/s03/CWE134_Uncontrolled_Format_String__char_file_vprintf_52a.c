@@ -1,0 +1,137 @@
+/* TEMPLATE GENERATED TESTCASE FILE
+Filename: CWE134_Uncontrolled_Format_String__char_file_vprintf_52a.c
+Label Definition File: CWE134_Uncontrolled_Format_String.vasinks.label.xml
+Template File: sources-vasinks-52a.tmpl.c
+*/
+/*
+ * @description
+ * CWE: 134 Uncontrolled Format String
+ * BadSource: file Read input from a file
+ * GoodSource: Copy a fixed string into data
+ * Sinks: vprintf
+ *    GoodSink: vprintf with a format string
+ *    BadSink : vprintf without a format string
+ * Flow Variant: 52 Data flow: data passed as an argument from one function to another to another in three different source files
+ *
+ * */
+
+#include <stdarg.h>
+#include "std_testcase.h"
+
+#ifndef _WIN32
+#include <wchar.h>
+#endif
+
+#ifdef _WIN32
+#define FILENAME "C:\\temp\\A"
+#else
+#define FILENAME "A"
+#endif
+
+
+/* bad function declaration */
+void CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_badSink(char * data);
+
+void CWE134_Uncontrolled_Format_String__char_file_vprintf_52_bad()
+{
+    char * data;
+    char dataBuffer[100] = "";
+    data = dataBuffer;
+    {
+        /* Read input from a file */
+        size_t dataLen = strlen(data);
+        FILE * pFile;
+        /* if there is room in data, attempt to read the input from a file */
+        if (100-dataLen > 1)
+        {
+            pFile = fopen(FILENAME, "r");
+            if (pFile != NULL)
+            {
+                /* POTENTIAL FLAW: Read data from a file */
+                if (fgets(data+dataLen, (int)(100-dataLen), pFile) == NULL)
+                {
+                    printLine("fgets() failed");
+                    /* Restore NUL terminator if fgets fails */
+                    data[dataLen] = '\0';
+                }
+                fclose(pFile);
+            }
+        }
+    }
+    CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_badSink(data);
+}
+
+
+
+/* goodG2B uses the GoodSource with the BadSink */
+void CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_goodG2BSink(char * data);
+
+static void goodG2B()
+{
+    char * data;
+    char dataBuffer[100] = "";
+    data = dataBuffer;
+    /* FIX: Use a fixed string that does not contain a format specifier */
+    strcpy(data, "fixedstringtest");
+    CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_goodG2BSink(data);
+}
+
+/* goodB2G uses the BadSource with the GoodSink */
+void CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_goodB2GSink(char * data);
+
+static void goodB2G()
+{
+    char * data;
+    char dataBuffer[100] = "";
+    data = dataBuffer;
+    {
+        /* Read input from a file */
+        size_t dataLen = strlen(data);
+        FILE * pFile;
+        /* if there is room in data, attempt to read the input from a file */
+        if (100-dataLen > 1)
+        {
+            pFile = fopen(FILENAME, "r");
+            if (pFile != NULL)
+            {
+                /* POTENTIAL FLAW: Read data from a file */
+                if (fgets(data+dataLen, (int)(100-dataLen), pFile) == NULL)
+                {
+                    printLine("fgets() failed");
+                    /* Restore NUL terminator if fgets fails */
+                    data[dataLen] = '\0';
+                }
+                fclose(pFile);
+            }
+        }
+    }
+    CWE134_Uncontrolled_Format_String__char_file_vprintf_52b_goodB2GSink(data);
+}
+
+void CWE134_Uncontrolled_Format_String__char_file_vprintf_52_good()
+{
+    goodG2B();
+    goodB2G();
+}
+
+
+/* Below is the main(). It is only used when building this testcase on
+   its own for testing or for building a binary to use in testing binary
+   analysis tools. It is not used when compiling all the testcases as one
+   application, which is how source code analysis tools are tested. */
+
+#ifdef INCLUDEMAIN
+
+int main(int argc, char * argv[])
+{
+    /* seed randomness */
+    printLine("Calling good()...");
+    CWE134_Uncontrolled_Format_String__char_file_vprintf_52_good();
+    printLine("Finished good()");
+    printLine("Calling bad()...");
+    CWE134_Uncontrolled_Format_String__char_file_vprintf_52_bad();
+    printLine("Finished bad()");
+    return 0;
+}
+
+#endif

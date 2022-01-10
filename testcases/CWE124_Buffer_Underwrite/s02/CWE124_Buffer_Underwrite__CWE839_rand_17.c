@@ -1,0 +1,156 @@
+/* TEMPLATE GENERATED TESTCASE FILE
+Filename: CWE124_Buffer_Underwrite__CWE839_rand_17.c
+Label Definition File: CWE124_Buffer_Underwrite__CWE839.label.xml
+Template File: sources-sinks-17.tmpl.c
+*/
+/*
+ * @description
+ * CWE: 124 Buffer Underwrite
+ * BadSource: rand Set data to result of rand(), which may be zero
+ * GoodSource: Non-negative but less than 10
+ * Sinks:
+ *    GoodSink: Ensure the array index is valid
+ *    BadSink : Improperly check the array index by not checking the lower bound
+ * Flow Variant: 17 Control flow: for loops
+ *
+ * */
+
+#include "std_testcase.h"
+
+
+void CWE124_Buffer_Underwrite__CWE839_rand_17_bad()
+{
+    int i,j;
+    int data;
+    /* Initialize data */
+    data = -1;
+    for(i = 0; i < 1; i++)
+    {
+        /* POTENTIAL FLAW: Set data to a random value */
+        data = RAND32();
+    }
+    for(j = 0; j < 1; j++)
+    {
+        {
+            int i;
+            int buffer[10] = { 0 };
+            /* POTENTIAL FLAW: Attempt to access a negative index of the array
+            * This code does not check to see if the array index is negative */
+            if (data < 10)
+            {
+                buffer[data] = 1;
+                /* Print the array values */
+                for(i = 0; i < 10; i++)
+                {
+                    printIntLine(buffer[i]);
+                }
+            }
+            else
+            {
+                printLine("ERROR: Array index is negative.");
+            }
+        }
+    }
+}
+
+
+
+/* goodB2G() - use badsource and goodsink in the for statements */
+static void goodB2G()
+{
+    int i,k;
+    int data;
+    /* Initialize data */
+    data = -1;
+    for(i = 0; i < 1; i++)
+    {
+        /* POTENTIAL FLAW: Set data to a random value */
+        data = RAND32();
+    }
+    for(k = 0; k < 1; k++)
+    {
+        {
+            int i;
+            int buffer[10] = { 0 };
+            /* FIX: Properly validate the array index and prevent a buffer underwrite */
+            if (data >= 0 && data < (10))
+            {
+                buffer[data] = 1;
+                /* Print the array values */
+                for(i = 0; i < 10; i++)
+                {
+                    printIntLine(buffer[i]);
+                }
+            }
+            else
+            {
+                printLine("ERROR: Array index is out-of-bounds");
+            }
+        }
+    }
+}
+
+/* goodG2B() - use goodsource and badsink in the for statements */
+static void goodG2B()
+{
+    int h,j;
+    int data;
+    /* Initialize data */
+    data = -1;
+    for(h = 0; h < 1; h++)
+    {
+        /* FIX: Use a value greater than 0, but less than 10 to avoid attempting to
+        * access an index of the array in the sink that is out-of-bounds */
+        data = 7;
+    }
+    for(j = 0; j < 1; j++)
+    {
+        {
+            int i;
+            int buffer[10] = { 0 };
+            /* POTENTIAL FLAW: Attempt to access a negative index of the array
+            * This code does not check to see if the array index is negative */
+            if (data < 10)
+            {
+                buffer[data] = 1;
+                /* Print the array values */
+                for(i = 0; i < 10; i++)
+                {
+                    printIntLine(buffer[i]);
+                }
+            }
+            else
+            {
+                printLine("ERROR: Array index is negative.");
+            }
+        }
+    }
+}
+
+void CWE124_Buffer_Underwrite__CWE839_rand_17_good()
+{
+    goodB2G();
+    goodG2B();
+}
+
+
+/* Below is the main(). It is only used when building this testcase on
+   its own for testing or for building a binary to use in testing binary
+   analysis tools. It is not used when compiling all the testcases as one
+   application, which is how source code analysis tools are tested. */
+
+#ifdef INCLUDEMAIN
+
+int main(int argc, char * argv[])
+{
+    /* seed randomness */
+    printLine("Calling good()...");
+    CWE124_Buffer_Underwrite__CWE839_rand_17_good();
+    printLine("Finished good()");
+    printLine("Calling bad()...");
+    CWE124_Buffer_Underwrite__CWE839_rand_17_bad();
+    printLine("Finished bad()");
+    return 0;
+}
+
+#endif
